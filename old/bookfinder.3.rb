@@ -11,9 +11,8 @@ def get_title(data)
 end
 
 def get_publish_date(data)
-	return data["data"][0]["edition_info"]
-	#how do I map out that its a paperback? I suppose it's not a big deal,
-	#but thats not what I want
+	published = data["data"][0]["edition_info"].split[1]
+	return published
 end
 
 store = PStore.new("data.pstore")# I think this is working, but how do I tell?
@@ -33,6 +32,6 @@ author_name = get_author_name(data)
 title = get_title(data)
 publsh_date = get_publish_date(data)
 
-puts "MY AUTHOR NAME IS FUCKING BALLER: #{author_name}"
-puts "THIS IS THE FUCKING TITLE: #{title}"
-puts "This shit was published on #{publsh_date}"
+puts "MY AUTHOR NAME: #{author_name}"
+puts "THIS IS THE TITLE: #{title}"
+puts "This was published on #{publsh_date}"
