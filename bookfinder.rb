@@ -42,7 +42,7 @@ def add_book
 		:publish_date => "#{publsh_date}"
 	}
 
-	File.open("./bookfinder.json", "w") do |f|
+	File.open(FILENAME, "w") do |f|
 		DATA[isbn] = book
 		f.write(JSON.pretty_generate(DATA))
 	end
@@ -75,15 +75,15 @@ def enter
 	menu
 end
 
-filename = "./bookfinder.json"
+FILENAME = "./bookfinder.json"
 
-if File.exist? filename
-	File.open(filename, "r") do |f|
+if File.exist? FILENAME
+	File.open(FILENAME, "r") do |f|
 		text = f.read
 		begin
 			DATA = JSON.parse(text)
 		rescue JSON::ParserError => e
-			raise e, "Could not read file. Please ensure you have valid JSON in #{filename}"
+			raise e, "Could not read file. Please ensure you have valid JSON in #{FILENAME}"
 			exit(1)
 		end
 	end
