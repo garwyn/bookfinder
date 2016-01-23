@@ -27,21 +27,14 @@ def add_book
 	resp = Net::HTTP.get_response(URI.parse(url))
 	 if resp.code == "200"
 		data = JSON.parse(resp.body)
-		puts JSON.pretty_generate(data)
 	else
 		puts resp.code
 		puts "Something went wrong."
 	end
 
-	puts ("-" * 10 ) + ("\n" * 10) + ("-" * 10)
-
 	author_name = get_author_name(data)
 	title = get_title(data)
 	publsh_date = get_publish_date(data)
-
-	puts "MY AUTHOR NAME: #{author_name}"
-	puts "THIS IS THE TITLE: #{title}"
-	puts "This was published on #{publsh_date}"
 
 	book = {
 		:author => "#{author_name}",
@@ -49,8 +42,9 @@ def add_book
 		:publish_date => "#{publsh_date}"
 	}
 
-	CSV.open("./bookfinder.csv", "a") do |csv|
-		csv << [book[:author], book[:title], book[:publish_date]]
+	File.open("./bookfinder.json", "w") do |f|
+		DATA[isbn] = book
+		f.write(JSON.pretty_generate(DATA))
 	end
 end
 
@@ -79,6 +73,22 @@ end
 def enter
 	puts "Welcome to your library!"
 	menu
+end
+
+filename = "./bookfinder.json"
+
+if File.exist? filename
+	File.open(filename, "r") do |f|
+		text = f.read
+		begin
+			DATA = JSON.parse(text)
+		rescue JSON::ParserError => e
+			raise e, "Could not read file. Please ensure you have valid JSON in #{filename}"
+			exit(1)
+		end
+	end
+else
+	DATA = {}
 end
 
 enter
