@@ -39,11 +39,12 @@ def add_book
 	if resp.code == "200"
 		data = JSON.parse(resp.body)
 		if data["error"]
-			#puts data
 			puts data["error"]
 			return
 		end
-
+	elsif resp.code == "404"
+		puts "Cannot find book with that ISBN #."
+		return
 	else
 		puts resp.code
 		puts "Something went wrong."
