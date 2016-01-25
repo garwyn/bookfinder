@@ -24,9 +24,26 @@ def add_book
 
 	isbn = gets.chomp
 	url = "http://isbndb.com/api/v2/json/TVVFMNE5/book/#{isbn}"
-	resp = Net::HTTP.get_response(URI.parse(url))
-	 if resp.code == "200"
+
+	begin
+		resp = Net::HTTP.get_response(URI.parse(url))
+	rescue SocketError => e
+		puts e.message
+		puts "Please connect to the internet."
+		return
+	rescue URI::InvalidURIError => e
+		puts "Invalid URI. Please make sure your ISBN number is correct. (#{isbn})"
+		return
+	end
+
+	if resp.code == "200"
 		data = JSON.parse(resp.body)
+		if data["error"]
+			#puts data
+			puts data["error"]
+			return
+		end
+
 	else
 		puts resp.code
 		puts "Something went wrong."
@@ -42,8 +59,11 @@ def add_book
 		:publish_date => "#{publsh_date}"
 	}
 
+	puts "book is #{book}"
+
+	DATA[isbn] = book
+
 	File.open(FILENAME, "w") do |f|
-		DATA[isbn] = book
 		f.write(JSON.pretty_generate(DATA))
 	end
 end
@@ -75,20 +95,22 @@ def enter
 	menu
 end
 
-FILENAME = "./bookfinder.json"
-
-if File.exist? FILENAME
-	File.open(FILENAME, "r") do |f|
-		text = f.read
-		begin
-			DATA = JSON.parse(text)
-		rescue JSON::ParserError => e
-			raise e, "Could not read file. Please ensure you have valid JSON in #{FILENAME}"
-			exit(1)
+def get_data(filename)
+	if File.exist? filename
+		File.open(filename, "r") do |f|
+			text = f.read
+			begin
+				return JSON.parse(text)
+			rescue JSON::ParserError => e
+				raise e, "Could not read file. Please ensure you have valid JSON in #{filename}"
+				exit(1)
+			end
 		end
+	else
+		return {}
 	end
-else
-	DATA = {}
 end
 
+FILENAME = "./bookfinder.json"
+DATA = get_data(FILENAME)
 enter
