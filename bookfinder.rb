@@ -94,14 +94,33 @@ def search(field)
 	return matches
 end
 
+def delete
+	print "Enter the ISBN number of the book you wish to delete. > "
+	isbn = gets.chomp
+
+	if DATA.has_key?(isbn)
+		DATA.delete(isbn)
+
+		File.open(FILENAME, "w") do |f|
+			f.write(JSON.pretty_generate(DATA))
+		end
+
+		puts "Deleted book with isbn \"#{isbn}\" successfully"
+	else
+		puts "Sorry. couldn't find that book."	
+	end
+end
+
 def menu
-	print "What do you want to do? (add, search) > "
+	print "What do you want to do? (add, search, delete) > "
 
 	choice = gets.chomp.downcase
 	if choice.include? "add"
 		add_book
 	elsif choice.include? "search"
 	    search_book
+	elsif choice.include? "delete"
+		delete
 	end
 
 	print "Are you finished? > "
