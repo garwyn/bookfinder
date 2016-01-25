@@ -19,7 +19,6 @@ end
 
 
 def add_book
-
 	print "Input your ISBN number here > "
 
 	isbn = gets.chomp
@@ -70,7 +69,29 @@ def add_book
 end
 
 def search_book
-	puts "What is it you're looking for? > "
+	puts "What is it you're looking for? (Title, Author, Publish Date) "
+	choice = gets.chomp.downcase
+	if choice == "title"
+		puts search("title")
+	elsif choice == "author"
+		puts search("author")
+	elsif choice == "publish date"
+		puts search("publish_date")
+	end
+end
+
+def search(field)
+	print "Enter in the #{field} for the book you're looking for. > "
+	input = gets.chomp.downcase
+    matches = []
+
+	DATA.each do |isbn, book|
+		if input == book[field].downcase
+			matches.push(book)
+		end
+	end
+
+	return matches
 end
 
 def menu
@@ -114,4 +135,5 @@ end
 
 FILENAME = "./bookfinder.json"
 DATA = get_data(FILENAME)
+
 enter
